@@ -10,7 +10,13 @@
     "preview": "vite preview"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": "18.x"
+  },
+  "build": {
+    "env": {
+      "VITE_SUPABASE_URL": "$VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY": "$VITE_SUPABASE_ANON_KEY"
+    }
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.52.0",
