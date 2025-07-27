@@ -1,0 +1,345 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { FiChevronLeft, FiClock, FiFlag } from 'react-icons/fi';
+import ResultsModal from '../components/ResultsModal';
+
+// Types
+type Difficulty = 'easy' | 'medium' | 'hard';
+
+interface Question {
+  id: number;
+  text: string;
+  options: string[];
+  correctIndex?: number;
+  difficulty: Difficulty;
+}
+
+const MARKS = {
+  easy: 1,
+  medium: 2,
+  hard: 4
+} as const;
+
+// Test duration in minutes
+const TEST_DURATION_MIN = 30;
+
+// utility to evaluate score
+const calculateScore = (
+  qs: Question[],
+  ans: Record<number, number | null>
+): { 
+  score: number; 
+  total: number;
+  byDifficulty: {
+    easy: { correct: number; total: number; marks: number };
+    medium: { correct: number; total: number; marks: number };
+    hard: { correct: number; total: number; marks: number };
+  };
+} => {
+  const result = {
+    score: 0,
+    total: 0,
+    byDifficulty: {
+      easy: { correct: 0, total: 0, marks: 0 },
+      medium: { correct: 0, total: 0, marks: 0 },
+      hard: { correct: 0, total: 0, marks: 0 },
+    }
+  };
+
+  qs.forEach((q) => {
+    const isCorrect = q.correctIndex !== undefined && ans[q.id] === q.correctIndex;
+    const marks = isCorrect ? MARKS[q.difficulty] : 0;
+    
+    result.total += MARKS[q.difficulty];
+    result.byDifficulty[q.difficulty].total += 1;
+    result.byDifficulty[q.difficulty].marks += marks;
+    
+    if (isCorrect) {
+      result.score += marks;
+      result.byDifficulty[q.difficulty].correct += 1;
+    }
+  });
+
+  return result;
+};
+
+const questions: Question[] = [
+  // Easy questions (1 point each)
+  {
+    id: 1,
+    text: 'What is 2 + 2?',
+    options: ['3', '4', '5', '6'],
+    correctIndex: 1,
+    difficulty: 'easy' as const,
+  },
+  {
+    id: 2,
+    text: 'What is the capital of France?',
+    options: ['London', 'Berlin', 'Paris', 'Madrid'],
+    correctIndex: 2,
+    difficulty: 'easy' as const,
+  },
+  {
+    id: 3,
+    text: 'What is the largest planet in our solar system?',
+    options: ['Earth', 'Jupiter', 'Saturn', 'Mars'],
+    correctIndex: 1,
+    difficulty: 'easy' as const,
+  },
+  
+  // Medium questions (2 points each)
+  {
+    id: 4,
+    text: 'Solve for x: 2x + 5 = 15',
+    options: ['5', '10', '7.5', '20'],
+    correctIndex: 0,
+    difficulty: 'medium' as const,
+  },
+  {
+    id: 5,
+    text: 'What is the chemical symbol for Gold?',
+    options: ['Go', 'Gl', 'Au', 'Ag'],
+    correctIndex: 2,
+    difficulty: 'medium' as const,
+  },
+  {
+    id: 6,
+    text: 'Who painted the Mona Lisa?',
+    options: ['Vincent van Gogh', 'Pablo Picasso', 'Leonardo da Vinci', 'Michelangelo'],
+    correctIndex: 2,
+    difficulty: 'medium' as const,
+  },
+  
+  // Hard questions (4 points each)
+  {
+    id: 7,
+    text: 'What is the derivative of x³ with respect to x?',
+    options: ['x²', '2x²', '3x²', '4x²'],
+    correctIndex: 2,
+    difficulty: 'hard' as const,
+  },
+  {
+    id: 8,
+    text: 'In quantum mechanics, what does the Heisenberg Uncertainty Principle state?',
+    options: [
+      'Energy cannot be created or destroyed',
+      'The position and momentum of a particle cannot both be precisely measured simultaneously',
+      'Light behaves as both a particle and a wave',
+      'The universe is expanding at an accelerating rate'
+    ],
+    correctIndex: 1,
+    difficulty: 'hard' as const,
+  },
+  {
+    id: 9,
+    text: 'What is the time complexity of a binary search algorithm?',
+    options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
+    correctIndex: 1,
+    difficulty: 'hard' as const,
+  },
+];
+
+const CourseTestPage = () => {
+  const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
+  
+  // State management
+  const [current, setCurrent] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number | null>>({});
+  const [timeLeft, setTimeLeft] = useState(TEST_DURATION_MIN * 60);
+  const [showResults, setShowResults] = useState(false);
+  const [scoreData, setScoreData] = useState<ReturnType<typeof calculateScore> | null>(null);
+  
+  // Group questions by difficulty for the sidebar
+  const questionsByDifficulty = questions.reduce((acc, q) => {
+    if (!acc[q.difficulty]) {
+      acc[q.difficulty] = [];
+    }
+    acc[q.difficulty].push(q);
+    return acc;
+  }, {} as Record<Difficulty, Question[]>);
+  
+  const currentQuestion = questions[current];
+
+  // Initialize answers
+  useEffect(() => {
+    const initialAnswers = questions.reduce((acc, q) => {
+      acc[q.id] = null;
+      return acc;
+    }, {} as Record<number, number | null>);
+    setAnswers(initialAnswers);
+  }, []);
+
+  // Timer effect
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      handleSubmit();
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  // Helpers
+  const formatTime = (sec: number) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const selectOption = (optIdx: number) => {
+    setAnswers(prev => ({ ...prev, [currentQuestion.id]: optIdx }));
+  };
+
+  const clearResponse = () => selectOption(-1);
+  const next = () => setCurrent(prev => Math.min(prev + 1, questions.length - 1));
+  const prev = () => setCurrent(prev => Math.max(prev - 1, 0));
+  const jump = (index: number) => setCurrent(index);
+
+  const handleSubmit = useCallback(() => {
+    const score = calculateScore(questions, answers);
+    setScoreData(score);
+    setShowResults(true);
+  }, [answers]);
+
+  const handleCloseResults = useCallback(() => {
+    setShowResults(false);
+    navigate(`/courses/${courseId}`);
+  }, [courseId, navigate]);
+
+  if (!currentQuestion) return <div className="p-8 text-center">Loading questions…</div>;
+
+  return (
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
+      {/* Question area */}
+      <div className="flex-1 p-6 md:p-10">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+          >
+            <FiChevronLeft className="mr-1" /> Back
+          </button>
+          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+            <FiClock /> <span>{formatTime(timeLeft)}</span>
+          </div>
+        </div>
+
+        {/* Question text */}
+        <h2 className="font-semibold mb-4">
+          Question {current + 1}. <span className="font-normal">{currentQuestion.text}</span>
+        </h2>
+
+        <div className="space-y-3 mb-8">
+          {currentQuestion.options.map((opt: string, idx: number) => (
+            <label key={idx} className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name={`q-${currentQuestion.id}`}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                checked={answers[currentQuestion.id] === idx}
+                onChange={() => selectOption(idx)}
+              />
+              <span>{opt}</span>
+            </label>
+          ))}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex space-x-4">
+          <button
+            onClick={prev}
+            disabled={current === 0}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            onClick={next}
+            disabled={current === questions.length - 1}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+          <button
+            onClick={clearResponse}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+          >
+            Clear Response
+          </button>
+        </div>
+
+        {/* Fixed submit button at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg md:right-64 transition-all">
+          <div className="max-w-4xl mx-auto flex justify-end">
+            <button 
+              onClick={() => {
+                if (window.confirm('Are you sure you want to submit the test?')) {
+                  handleSubmit();
+                }
+              }}
+              className="px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition-colors shadow-md"
+            >
+              Submit Test
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Palette / sidebar */}
+      <aside className="w-full md:w-64 border-t md:border-t-0 md:border-l bg-white p-4 md:p-6 overflow-y-auto">
+        <h3 className="font-medium mb-4 flex items-center">
+          <FiFlag className="mr-2" /> Questions Palette
+        </h3>
+        
+        {Object.entries(questionsByDifficulty).map(([difficulty, qs]) => (
+          <div key={difficulty} className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="font-medium capitalize">{difficulty} ({qs.length} × {MARKS[difficulty as Difficulty]} marks)</h4>
+              <span className="text-sm text-gray-500">
+                {qs.filter(q => answers[q.id] !== undefined && answers[q.id] !== null).length}/{qs.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-5 gap-2 text-sm">
+              {qs.map((q) => {
+                const questionIndex = questions.findIndex(qq => qq.id === q.id);
+                const isCurrent = current === questionIndex;
+                const isAnswered = answers[q.id] !== undefined && answers[q.id] !== null;
+                
+                return (
+                  <button
+                    key={q.id}
+                    onClick={() => jump(questionIndex)}
+                    className={`h-8 w-8 rounded-full border text-center leading-8 transition-colors ${
+                      isCurrent
+                        ? 'bg-primary-600 text-white border-primary-600'
+                        : isAnswered
+                        ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200'
+                        : 'border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    {questionIndex + 1}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </aside>
+
+      {/* Results Modal */}
+      <ResultsModal
+        isOpen={showResults}
+        onClose={handleCloseResults}
+        scoreData={scoreData}
+      />
+    </div>
+  );
+};
+
+export default CourseTestPage;

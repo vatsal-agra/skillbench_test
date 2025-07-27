@@ -1,0 +1,192 @@
+      <main>
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={fadeInUp}
+                className="text-center lg:text-left"
+              >
+                <motion.h1 
+                  className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl"
+                >
+                  <span className="block">Master New Skills with</span>
+                  <span className="block bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent">
+                    Expert-Led Courses
+                  </span>
+                </motion.h1>
+                <motion.p 
+                  className="mt-3 max-w-md mx-auto text-lg text-gray-500 sm:text-xl md:mt-5 md:max-w-3xl lg:mx-0"
+                  variants={fadeInUp}
+                >
+                  Access high-quality video courses for just $1. Test your knowledge and earn certificates to showcase your skills to the world.
+                </motion.p>
+                <motion.div 
+                  className="mt-10 sm:flex sm:justify-center lg:justify-start space-y-3 sm:space-y-0 sm:space-x-4"
+                  variants={staggerContainer}
+                >
+                  <motion.div variants={fadeInUp}>
+                    <a
+                      href="#courses"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+                    >
+                      Browse Courses
+                      <FiArrowRight className="ml-2 -mr-1 h-5 w-5" />
+                    </a>
+                  </motion.div>
+                  <motion.div variants={fadeInUp}>
+                    <a
+                      href="#how-it-works"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 md:py-4 md:text-lg md:px-10 transition-colors duration-300"
+                    >
+                      How It Works
+                      <FiPlayCircle className="ml-2 -mr-1 h-5 w-5" />
+                    </a>
+                  </motion.div>
+                </motion.div>
+                
+                {/* Stats */}
+                <motion.div 
+                  className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-4 lg:grid-cols-4"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={staggerContainer}
+                >
+                  {[
+                    { number: '100+', label: 'Courses' },
+                    { number: '50K+', label: 'Students' },
+                    { number: '98%', label: 'Satisfaction' },
+                    { number: '24/7', label: 'Support' }
+                  ].map((stat, index) => (
+                    <motion.div 
+                      key={stat.label} 
+                      className="text-center"
+                      variants={fadeInUp}
+                      custom={index * 0.1}
+                    >
+                      <div className="text-3xl font-bold text-primary-600">{stat.number}</div>
+                      <div className="mt-1 text-sm font-medium text-gray-500">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+              
+              <motion.div 
+                className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0"
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0, 
+                  scale: 1,
+                  transition: {
+                    delay: 0.2,
+                    duration: 0.8,
+                    ease: [0.16, 1, 0.3, 1]
+                  }
+                }}
+              >
+                <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
+                  <div className="relative block w-full bg-white rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <img
+                      className="w-full h-auto"
+                      src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                      alt="Course preview"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <button className="p-3 rounded-full bg-white bg-opacity-90 text-primary-600 hover:bg-opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform transition-all hover:scale-110">
+                        <FiPlay className="h-8 w-8" aria-hidden="true" />
+                        <span className="sr-only">Play video</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Decorative elements */}
+                <div className="absolute -z-10 w-40 h-40 bg-primary-100 rounded-full -top-10 -right-10 opacity-70 mix-blend-multiply filter blur-xl animate-blob"></div>
+                <div className="absolute -z-10 w-40 h-40 bg-secondary-100 rounded-full -bottom-10 -left-10 opacity-70 mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+                <div className="absolute -z-10 w-40 h-40 bg-green-100 rounded-full top-1/2 -right-20 opacity-70 mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+        
+        {/* How It Works Section */}
+        <section id="how-it-works" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <motion.h2 
+                className="text-3xl font-extrabold text-gray-900 sm:text-4xl"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                How It Works
+              </motion.h2>
+              <motion.p 
+                className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                Get started in just a few simple steps
+              </motion.p>
+            </div>
+            
+            <div className="mt-16">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  {
+                    number: '1',
+                    title: 'Choose a Course',
+                    description: 'Browse our extensive library of courses and select the one that matches your learning goals.',
+                    icon: <FiBookOpen className="h-6 w-6 text-primary-600" />
+                  },
+                  {
+                    number: '2',
+                    title: 'Watch & Learn',
+                    description: 'Access high-quality video content for just $1 and learn at your own pace.',
+                    icon: <FiMonitor className="h-6 w-6 text-primary-600" />
+                  },
+                  {
+                    number: '3',
+                    title: 'Take the Test',
+                    description: 'Test your knowledge with our comprehensive assessment and earn your certificate.',
+                    icon: <FiAward className="h-6 w-6 text-primary-600" />
+                  }
+                ].map((step, index) => (
+                  <motion.div
+                    key={step.number}
+                    className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-primary-50 text-primary-600 text-lg font-bold">
+                        {step.number}
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-lg font-medium text-gray-900">{step.title}</h3>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-base text-gray-500">{step.description}</p>
+                    </div>
+                    <div className="mt-6">
+                      <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-primary-50">
+                        {step.icon}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>

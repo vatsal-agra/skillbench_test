@@ -1,0 +1,131 @@
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiSearch, FiClock, FiAward, FiBookOpen, FiChevronRight, FiArrowRight } from 'react-icons/fi'
+import { FaGraduationCap, FaLaptopCode, FaChartLine, FaMobileAlt } from 'react-icons/fa'
+
+interface Course {
+  id: number
+  title: string
+  description: string
+  thumbnail: string
+  category: string
+  duration: string
+  price: number
+  students: number
+  rating: number
+  instructor: string
+}
+
+const courses: Course[] = [
+  {
+    id: 1,
+    title: 'Web Development Bootcamp',
+    description: 'Master modern web development with React, Node.js, and MongoDB. Build real-world projects and deploy them to production.',
+    thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1472&q=80',
+    category: 'Development',
+    duration: '8 weeks',
+    price: 1,
+    students: 1245,
+    rating: 4.9,
+    instructor: 'Alex Johnson'
+  },
+  {
+    id: 2,
+    title: 'Data Science Fundamentals',
+    description: 'Learn data analysis, visualization, and machine learning basics with Python and popular data science libraries.',
+    thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Data Science',
+    duration: '6 weeks',
+    price: 1,
+    students: 892,
+    rating: 4.8,
+    instructor: 'Sarah Chen'
+  },
+  {
+    id: 3,
+    title: 'Digital Marketing Mastery',
+    description: 'Grow your business with proven digital marketing strategies including SEO, social media, and content marketing.',
+    thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1415&q=80',
+    category: 'Marketing',
+    duration: '4 weeks',
+    price: 1,
+    students: 756,
+    rating: 4.7,
+    instructor: 'Michael Brown'
+  },
+  {
+    id: 4,
+    title: 'UX/UI Design Principles',
+    description: 'Design beautiful and intuitive user interfaces with modern design tools and user-centered design principles.',
+    thumbnail: 'https://images.unsplash.com/photo-1541462608143-67571c6738dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Design',
+    duration: '5 weeks',
+    price: 1,
+    students: 1023,
+    rating: 4.9,
+    instructor: 'Emily Wilson'
+  },
+  {
+    id: 5,
+    title: 'Mobile App Development',
+    description: 'Build cross-platform mobile applications using React Native and modern mobile development practices.',
+    thumbnail: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Development',
+    duration: '7 weeks',
+    price: 1,
+    students: 934,
+    rating: 4.8,
+    instructor: 'David Kim'
+  },
+  {
+    id: 6,
+    title: 'Data Visualization',
+    description: 'Create stunning visualizations and dashboards with D3.js and modern data visualization techniques.',
+    thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Data Science',
+    duration: '4 weeks',
+    price: 1,
+    students: 678,
+    rating: 4.7,
+    instructor: 'Lisa Wong'
+  },
+  {
+    id: 7,
+    title: 'Content Marketing Strategy',
+    description: 'Develop a winning content marketing strategy that drives traffic, leads, and sales for your business.',
+    thumbnail: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Marketing',
+    duration: '3 weeks',
+    price: 1,
+    students: 542,
+    rating: 4.6,
+    instructor: 'Robert Taylor'
+  },
+  {
+    id: 8,
+    title: 'Product Design',
+    description: 'Master the end-to-end product design process from research to high-fidelity prototypes.',
+    thumbnail: 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+    category: 'Design',
+    duration: '6 weeks',
+    price: 1,
+    students: 789,
+    rating: 4.9,
+    instructor: 'Jennifer Lee'
+  }
+]
+
+const categories = [
+  { name: 'All', icon: <FaLaptopCode className="w-5 h-5" /> },
+  { name: 'Development', icon: <FaLaptopCode className="w-5 h-5" /> },
+  { name: 'Data Science', icon: <FaChartLine className="w-5 h-5" /> },
+  { name: 'Marketing', icon: <FaGraduationCap className="w-5 h-5" /> },
+  { name: 'Design', icon: <FaMobileAlt className="w-5 h-5" /> },
+]
+
+const stats = [
+  { id: 1, name: 'Students Enrolled', value: '50,000+', icon: FiBookOpen },
+  { id: 2, name: 'Courses Available', value: '200+', icon: FiAward },
+  { id: 3, name: 'Certificates Issued', value: '35,000+', icon: FiAward },
+  { id: 4, name: 'Hours of Content', value: '5,000+', icon: FiClock },
+]

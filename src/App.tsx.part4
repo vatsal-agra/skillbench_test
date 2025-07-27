@@ -1,0 +1,423 @@
+        {/* Courses Section */}
+        <section id="courses" className="py-20 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <motion.h2 
+                className="text-3xl font-extrabold text-gray-900 sm:text-4xl"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                Popular Courses
+              </motion.h2>
+              <motion.p 
+                className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                Choose from our most popular courses and start learning today
+              </motion.p>
+            </div>
+            
+            {/* Search and Filter */}
+            <motion.div 
+              className="mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <div className="relative flex-1 max-w-md">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiSearch className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Search courses..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="w-full md:w-auto">
+                  <select
+                    className="block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-lg"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="All">All Categories</option>
+                    {Array.from(new Set(courses.map(course => course.category))).map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </motion.div>
+            
+            {/* Course Grid */}
+            {filteredCourses.length > 0 ? (
+              <motion.div 
+                className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+              >
+                {filteredCourses.map((course, index) => (
+                  <motion.div
+                    key={course.id}
+                    className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-300"
+                    variants={fadeInUp}
+                    custom={index * 0.1}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="relative">
+                      <img 
+                        className="w-full h-48 object-cover" 
+                        src={course.image} 
+                        alt={course.title} 
+                      />
+                      <div className="absolute top-3 right-3">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                          {course.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="flex items-center text-yellow-400">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <FiStar 
+                                key={star} 
+                                className={`h-4 w-4 ${star <= Math.round(course.rating) ? 'fill-current' : ''}`} 
+                              />
+                            ))}
+                          </div>
+                          <span className="ml-2 text-sm text-gray-600">{course.rating.toFixed(1)}</span>
+                        </div>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {course.level}
+                        </span>
+                      </div>
+                      
+                      <h3 className="mt-3 text-lg font-semibold text-gray-900 line-clamp-2">
+                        {course.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-500 line-clamp-2">
+                        {course.description}
+                      </p>
+                      
+                      <div className="mt-4 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0">
+                            <img 
+                              className="h-8 w-8 rounded-full" 
+                              src={course.instructor.avatar} 
+                              alt={course.instructor.name} 
+                            />
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-sm font-medium text-gray-700">
+                              {course.instructor.name}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-gray-500">
+                            {course.duration} hours
+                          </p>
+                          <p className="text-lg font-bold text-primary-600">
+                            ${course.price.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                      >
+                        Enroll Now
+                        <FiArrowRight className="ml-2 -mr-1 h-4 w-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="text-center py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <FiSearch className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-lg font-medium text-gray-900">No courses found</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Try adjusting your search or filter to find what you're looking for.
+                </p>
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setCategory('All');
+                    }}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  >
+                    <FiRefreshCw className="-ml-1 mr-2 h-4 w-4" />
+                    Reset filters
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </section>
+        
+        {/* Testimonials Section */}
+        <section id="testimonials" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <motion.h2 
+                className="text-3xl font-extrabold text-gray-900 sm:text-4xl"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                What Our Students Say
+              </motion.h2>
+              <motion.p 
+                className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                Join thousands of satisfied students who have enhanced their skills with us
+              </motion.p>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  name: 'Sarah Johnson',
+                  role: 'Web Developer',
+                  avatar: 'https://randomuser.me/api/portraits/women/43.jpg',
+                  content: 'The courses on SkillBench are incredibly well-structured and easy to follow. I landed my first developer job after completing just two courses!',
+                  rating: 5
+                },
+                {
+                  name: 'Michael Chen',
+                  role: 'UX Designer',
+                  avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+                  content: 'The quality of instruction is top-notch. The $1 price point is an absolute steal for the value you get. Highly recommended!',
+                  rating: 5
+                },
+                {
+                  name: 'Emily Rodriguez',
+                  role: 'Data Analyst',
+                  avatar: 'https://randomuser.me/api/portraits/women/65.jpg',
+                  content: 'I was able to switch careers thanks to SkillBench. The certificate helped me stand out in job applications and interviews.',
+                  rating: 5
+                }
+              ].map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.name}
+                  className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="flex items-center">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <FiStar 
+                          key={star} 
+                          className={`h-4 w-4 ${star <= testimonial.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <blockquote className="mt-4">
+                    <p className="text-gray-600 italic">"{testimonial.content}"</p>
+                  </blockquote>
+                  <div className="mt-6 flex items-center">
+                    <div className="flex-shrink-0">
+                      <img 
+                        className="h-12 w-12 rounded-full" 
+                        src={testimonial.avatar} 
+                        alt={testimonial.name} 
+                      />
+                    </div>
+                    <div className="ml-4">
+                      <p className="text-sm font-medium text-gray-900">{testimonial.name}</p>
+                      <p className="text-sm text-gray-500">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        {/* CTA Section */}
+        <section className="bg-gradient-to-r from-primary-600 to-primary-500">
+          <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center lg:text-left"
+            >
+              <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                <span className="block">Ready to enhance your skills?</span>
+                <span className="block text-primary-100">Start learning today for just $1.</span>
+              </h2>
+              <p className="mt-4 text-lg text-primary-100">
+                Join thousands of students who have already transformed their careers with our courses.
+              </p>
+            </motion.div>
+            <motion.div 
+              className="mt-8 flex lg:mt-0 lg:flex-shrink-0 justify-center lg:justify-start"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="inline-flex rounded-md shadow">
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10 transition-colors duration-300"
+                >
+                  Get Started
+                  <FiArrowRight className="ml-2 -mr-1 h-5 w-5" />
+                </a>
+              </div>
+              <div className="ml-3 inline-flex rounded-md shadow">
+                <a
+                  href="#"
+                  className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-500 bg-opacity-60 hover:bg-opacity-70 md:py-4 md:text-lg md:px-10 transition-colors duration-300"
+                >
+                  Learn More
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </main>
+      
+      {/* Footer */}
+      <footer className="bg-gray-900">
+        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+          <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+            <div className="space-y-8 xl:col-span-1">
+              <div className="flex items-center">
+                <span className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 bg-clip-text text-transparent">
+                  SkillBench
+                </span>
+              </div>
+              <p className="text-gray-300 text-base">
+                Empowering learners worldwide with affordable, high-quality education.
+              </p>
+              <div className="flex space-x-6">
+                {[
+                  { icon: <FiFacebook className="h-6 w-6" />, label: 'Facebook' },
+                  { icon: <FiTwitter className="h-6 w-6" />, label: 'Twitter' },
+                  { icon: <FiInstagram className="h-6 w-6" />, label: 'Instagram' },
+                  { icon: <FiLinkedin className="h-6 w-6" />, label: 'LinkedIn' },
+                  { icon: <FiYoutube className="h-6 w-6" />, label: 'YouTube' }
+                ].map((social) => (
+                  <a key={social.label} href="#" className="text-gray-400 hover:text-white">
+                    <span className="sr-only">{social.label}</span>
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+              <div className="md:grid md:grid-cols-2 md:gap-8">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                    Company
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    {['About', 'Blog', 'Careers', 'Press'].map((item) => (
+                      <li key={item}>
+                        <a href="#" className="text-base text-gray-400 hover:text-white">
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-12 md:mt-0">
+                  <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                    Support
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    {['Help Center', 'Contact Us', 'Privacy Policy', 'Terms of Service'].map((item) => (
+                      <li key={item}>
+                        <a href="#" className="text-base text-gray-400 hover:text-white">
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="md:grid md:grid-cols-2 md:gap-8">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                    Resources
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    {['Documentation', 'Guides', 'Webinars', 'Community'].map((item) => (
+                      <li key={item}>
+                        <a href="#" className="text-base text-gray-400 hover:text-white">
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-12 md:mt-0">
+                  <h3 className="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                    Legal
+                  </h3>
+                  <ul className="mt-4 space-y-4">
+                    {['Claim', 'Privacy', 'Terms', 'Policy'].map((item) => (
+                      <li key={item}>
+                        <a href="#" className="text-base text-gray-400 hover:text-white">
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-12 border-t border-gray-700 pt-8">
+            <p className="text-base text-gray-400 text-center">
+              &copy; {new Date().getFullYear()} SkillBench. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+export default App
