@@ -11,8 +11,17 @@ export default defineConfig(({ mode }) => {
       port: 3001,
       open: true,
     },
+    build: {
+      outDir: 'dist',
+      sourcemap: mode !== 'production',
+      rollupOptions: {
+        // Ensure all dependencies are bundled
+        external: [],
+      },
+    },
     // This makes the environment variables available in the client
     define: {
+      'process.env.NODE_ENV': `"${mode}"`,
       'process.env': {}
     },
   }

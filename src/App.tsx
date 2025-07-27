@@ -2,7 +2,11 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+// Only import ReactQueryDevtools in development
+const ReactQueryDevtools = process.env.NODE_ENV === 'development' 
+  ? require('@tanstack/react-query-devtools').ReactQueryDevtools 
+  : () => null; // Return null in production
 import { Toaster } from 'react-hot-toast';
 
 // Import pages
