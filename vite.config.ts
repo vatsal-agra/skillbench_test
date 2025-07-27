@@ -2,8 +2,8 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current directory.
   const env = loadEnv(mode, process.cwd(), '')
+  const isProduction = mode === 'production'
   
   return {
     plugins: [react()],
@@ -13,16 +13,21 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: mode !== 'production',
+      sourcemap: !isProduction,
       rollupOptions: {
-        // Ensure all dependencies are bundled
-        external: [],
+        external: isProduction ? ['@tanstack/react-query-devtools'] : [],
+      },
+      commonjsOptions: {
+        include: /node_modules/,
       },
     },
-    // This makes the environment variables available in the client
     define: {
-      'process.env.NODE_ENV': `"${mode}"`,
+      'process.env.NODE_ENV': JSON.stringify(mode),
       'process.env': {}
     },
+    optimizeDeps: {
+      include: ['@tanstack/react-query'],
+      exclude: isProduction ? ['@tanstack/react-query-devtools'] : []
+    }
   }
 })
